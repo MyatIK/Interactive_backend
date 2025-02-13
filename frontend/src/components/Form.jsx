@@ -9,6 +9,7 @@ function Form({route,method}){
     const[password,setPassword]=useState("");
     const[loading,setLoading]=useState(false);
     const navigate = useNavigate();
+    const[errMsg,setErrMsg]=useState('');
 
 
     const name= method === 'login'? 'Login':'Register';
@@ -31,7 +32,13 @@ function Form({route,method}){
 
         }
         catch(error){
-            alert(error)
+            if (!error?.response) {
+                setErrMsg("No server Response");
+            } else if(error.response.status === 401){
+                setErrMsg("Wrong username or password")
+            } else{
+                setErrMsg("No data")
+            }
         }finally{
             setLoading(false)
         }
@@ -41,6 +48,7 @@ function Form({route,method}){
     
     return(
         <div className="bg-orange-100 p-5 w-1/2 flex justify-center">
+            {errMsg &&<p>{errMsg}</p>}
             <form onSubmit={handleSubmit}>
                 <h1 className="text-xl mb-10">{name}</h1>
                 <input className="block mb-5 p-2 rounded-md" type="text" value={username} name='username' onChange={(e)=>setUsername(e.target.value)} placeholder="Username"/>
